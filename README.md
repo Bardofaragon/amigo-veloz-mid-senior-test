@@ -1,12 +1,15 @@
 # Mid-Senior test
-This project is a simple Express application implementing [this requirements](requirements.md). Some assumptions were made for business rules like: 
+
+This project is a simple Express application implementing [this requirements](requirements.md). Some assumptions were made for business rules like:
+
 - You cannot pay more than you owe for a loan
 - A user cannot pay other people's loans
 
 Because a route was asked to be admin only the user model has an additonal field called role.
-Additionally instead of having remaining_balance and total_paid  as columns they're calculated when fetching any loan. If they're needed as a literal column or property they can be calculated with additional configuration for populating them as calculated fields.
+Additionally instead of having remaining_balance and total_paid as columns they're calculated when fetching any loan. If they're needed as a literal column or property they can be calculated with additional configuration for populating them as calculated fields.
 
-Tsoa is used instead of traditionally declaring routes for automatic documentation, to comply with the "Include example requests and responses" requirement and to get the most of type hinting. Originally the alpha of Sequelize that integrates typescript was used ([see doc](https://sequelize.org/docs/v7/getting-started/)) but yielded unexpected behaviors, for this reason some parts may not be type hinted like the returns in the controllers; this can be fixed using interfaces with the Loan, User and Payment model structure. For this same reason in some parts the sequelize object is casted to a regular object using the ```.get({plain: true})``` method in the sequelize-typescript responses. 
+Tsoa is used instead of traditionally declaring routes for automatic documentation, to comply with the "Include example requests and responses" requirement and to get the most of type hinting. Originally the alpha of Sequelize that integrates typescript was used ([see doc](https://sequelize.org/docs/v7/getting-started/)) but yielded unexpected behaviors, for this reason some parts may not be type hinted like the returns in the controllers; this can be fixed using interfaces with the Loan, User and Payment model structure. For this same reason in some parts the sequelize object is casted to a regular object using the `.get({plain: true})` method in the sequelize-typescript responses.
+
 ## 🛠️ Tech Stack
 
 ### Backend:
@@ -24,7 +27,6 @@ Tsoa is used instead of traditionally declaring routes for automatic documentati
 - Nodemon & TSX
 - Vitest
 - ESLint & Prettier
-
 
 ## Getting Started
 
@@ -50,8 +52,7 @@ docker compose up --build
 ```
 
 - The application will be available at: [http://localhost:3000](http://localhost:3000)
-- API documentation is available at: [http://localhost:3000/docs](http://localhost:3000/api/docs)
-
+- API documentation is available at: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
 ## ⚠️ Important: Avoid Manual Changes to Generated Files
 
@@ -65,10 +66,9 @@ yarn tsoa:spec
 
 - Any **manual changes** will be **overwritten** when **TSOA regenerates** these files.
 
-
 ## 🎮 Playing Around
-TBD. Seeding code pending.
 
+TBD. Seeding code pending.
 
 ## 🧪 Running Tests
 
@@ -76,10 +76,12 @@ TBD. Seeding code pending.
 yarn test
 ```
 
-⚠️ Important: Have in mind that the tests are not unit tests, since they're integration tests you need a database to run them. So for simplicity you may run 
+⚠️ Important: Have in mind that the tests are not unit tests, since they're integration tests you need a database to run them. So for simplicity you may run
+
 ```bash
 docker compose run app yarn test
 ```
+
 or modify the .env to point to a testing db
 
 ## 🚀 Deploying to Production
@@ -146,9 +148,10 @@ npx sequelize-cli db:migrate
 ---
 
 ## 💡 Helpful Commands
-For simplicity running ```docker compose run app yarn XXXX``` is recommended but have in mind that all the yarn commands can be run both inside and outside docker with minor tweaks.
 
- For example if you're pointing to host=database in the env, this uses the docker network to resolve database, but if you're running it without docker you may need to point to a propper host or localhost. Additionally if running without docker make sure to use the propper node version and install beforehand all the dependencies.
+For simplicity running `docker compose run app yarn XXXX` is recommended but have in mind that all the yarn commands can be run both inside and outside docker with minor tweaks.
+
+For example if you're pointing to host=database in the env, this uses the docker network to resolve database, but if you're running it without docker you may need to point to a propper host or localhost. Additionally if running without docker make sure to use the propper node version and install beforehand all the dependencies.
 
 | Command             | Description                            |
 | ------------------- | -------------------------------------- |
@@ -165,5 +168,5 @@ For simplicity running ```docker compose run app yarn XXXX``` is recommended but
 
 - Make sure **Docker** is running before executing **docker compose up**.
 
-- Since we're using bycript have in mind that your node_modules and yarn may compile the binary in different architectures. So don't try to run both yarn dev and the build at the same time even though the Dockerfile explicitly deletes the node_modules to avoid issues related to that. 
+- Since we're using bycript have in mind that your node_modules and yarn may compile the binary in different architectures. So don't try to run both yarn dev and the build at the same time even though the Dockerfile explicitly deletes the node_modules to avoid issues related to that.
 - If ports are in use, check for **existing processes** or **containers** using **port 3000**.

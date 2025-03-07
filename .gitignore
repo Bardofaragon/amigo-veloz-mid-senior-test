@@ -237,6 +237,6 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,vim,linux,windowsode
 # Ignore TSOA generated files
-src/routes.ts
-src/swagger.json
-src/openapi.json
+src/router/routes.ts
+src/router/swagger.json
+src/router/openapi.json

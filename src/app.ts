@@ -8,6 +8,7 @@ import config from './config/config.js';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from './routes/openapi.json';
 import { errorHandler } from './middlewares/error-handler/index.js';
+import { notFoundHandler } from './middlewares/error-handler/not-found.js';
 
 const app: Application = express();
 
@@ -25,6 +26,7 @@ if (config.env === 'development') {
 
 RegisterRoutes(app);
 
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;

@@ -25,7 +25,9 @@ export async function expressAuthentication(
 			const decoded = jwt.verify(bearerToken, config.jwt.secret) as User;
 
 			if (scopes && !scopes.includes(decoded.role)) {
-				throw new ForbiddenError('JWT does not contain required role');
+				throw new ForbiddenError(
+					"You don't have permission to to this operation",
+				);
 			}
 
 			return decoded;
