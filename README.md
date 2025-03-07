@@ -31,8 +31,8 @@ Tsoa is used instead of traditionally declaring routes for automatic documentati
 ### 1. Clone the Repository:
 
 ```bash
-git clone https://github.com/yourusername/yourproject.git
-cd yourproject
+git clone https://github.com/Bardofaragon/amigo-veloz-mid-senior-test.git
+cd amigo-veloz-mid-senior-test
 ```
 
 ### 2. Setup Environment Variables:
