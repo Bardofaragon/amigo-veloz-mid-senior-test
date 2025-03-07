@@ -50,7 +50,7 @@ docker compose up --build
 ```
 
 - The application will be available at: [http://localhost:3000](http://localhost:3000)
-- API documentation is available at: [http://localhost:3000/docs](http://localhost:3000/docs)
+- API documentation is available at: [http://localhost:3000/docs](http://localhost:3000/api/docs)
 
 
 ## ⚠️ Important: Avoid Manual Changes to Generated Files
