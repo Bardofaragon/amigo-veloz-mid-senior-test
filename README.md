@@ -55,7 +55,7 @@ docker compose up --build
 
 ## ⚠️ Important: Avoid Manual Changes to Generated Files
 
-- **Do NOT edit `src/routes.ts` or `src/openapi.json` manually.**
+- **Do NOT edit `src/routes/routes.ts` or `src/routes/openapi.json` manually.**
 - These files are **automatically generated** by **TSOA** using the commands:
 
 ```bash
