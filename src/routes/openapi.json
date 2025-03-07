@@ -1,0 +1,740 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"LoginResponse": {
+				"properties": {
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"token"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateUserDto": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginDto": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserRole": {
+				"enum": [
+					"admin",
+					"user",
+					"guest"
+				],
+				"type": "string"
+			},
+			"UserResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/UserRole"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"email",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NotFoundError": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BadRequestError": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePaymentDto": {
+				"properties": {
+					"loanId": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount_paid": {
+						"type": "number",
+						"format": "double"
+					},
+					"payment_date": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"loanId",
+					"amount_paid"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoanApplicationDto": {
+				"properties": {
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"purpose": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"amount",
+					"purpose",
+					"duration"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UnauthorizedError": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"message",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoanStatus": {
+				"enum": [
+					"Pending",
+					"Approved",
+					"Rejected"
+				],
+				"type": "string"
+			},
+			"UpdateLoanStatusDto": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/LoanStatus"
+					}
+				},
+				"required": [
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header",
+				"description": "Bearer token"
+			}
+		}
+	},
+	"info": {
+		"title": "amigo-veloz-mid-senior-test",
+		"version": "1.0.0",
+		"description": "Mid Senior test using express and postgresql for a loan application",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Fernando ",
+			"email": "fgfernando52@icloud.com"
+		}
+	},
+	"paths": {
+		"/users/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "JWT token for the newly registered user. Ideally you'd want a confirmation of the email or something.\nThis is just for demo purposes",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Registers a new user",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "- The user registration data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserDto",
+								"description": "- The user registration data"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "JWT token",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Authenticates a user and returns a JWT token",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "- The login credentials",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginDto",
+								"description": "- The login credentials"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users": {
+			"get": {
+				"operationId": "GetUserData",
+				"responses": {
+					"200": {
+						"description": "The authenticated user's data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns the authenticated user's data",
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/payments": {
+			"post": {
+				"operationId": "CreatePayment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid payment data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BadRequestError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found - Loan not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new payment for a specific loan\nOnly the loan owner or an admin can create a payment",
+				"tags": [
+					"Payments"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The payment details including the loan ID",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePaymentDto",
+								"description": "The payment details including the loan ID"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/loans": {
+			"post": {
+				"operationId": "SubmitLoan",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Creates a loan",
+				"tags": [
+					"Loans"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoanApplicationDto"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetUserLoans",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - User not authenticated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnauthorizedError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves all loans of the authenticated user",
+				"tags": [
+					"Loans"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "pageSize",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/loans/{loanId}": {
+			"get": {
+				"operationId": "GetUserLoanById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - User not authenticated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found - Loan not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves the details of a specific loan for the authenticated user",
+				"tags": [
+					"Loans"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the loan to retrieve",
+						"in": "path",
+						"name": "loanId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/loans/{loanId}/status": {
+			"patch": {
+				"operationId": "UpdateLoanStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request - Invalid status value",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BadRequestError"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Only admins can update loan status",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found - Loan not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the status of a specific loan\nOnly admins are allowed to perform this operation",
+				"tags": [
+					"Loans"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the loan to update",
+						"in": "path",
+						"name": "loanId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateLoanStatusDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/loans/{loanId}/payments": {
+			"get": {
+				"operationId": "GetPaymentsByLoanId",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - You cannot access these payments",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UnauthorizedError"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found - Loan not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NotFoundError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves all payments for a specific loan\nOnly the loan owner or an admin can access this data",
+				"tags": [
+					"Loans"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user",
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the loan",
+						"in": "path",
+						"name": "loanId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/hello": {
+			"get": {
+				"operationId": "GetMessage",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Hello"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api"
+		}
+	]
+}

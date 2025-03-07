@@ -1,0 +1,43 @@
+services:
+  database:
+    image: postgres:15
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: mysupersecretpassword
+      POSTGRES_DB: dev_db
+      POSTGRES_PORT: 5432
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  app:
+    image: node:22-alpine
+    container_name: express_app
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /usr/src/node-app
+    volumes:
+      - .:/usr/src/node-app:delegated
+      - /usr/src/node-app/node_modules
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - backend
+    command: ['yarn', 'dev']
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge

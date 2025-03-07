@@ -1,191 +1,169 @@
-# Personal Loan Application Technical Test
+# Mid-Senior test
+This project is a simple Express application implementing [this requirements](requirements.md). Some assumptions were made for business rules like: 
+- You cannot pay more than you owe for a loan
+- A user cannot pay other people's loans
 
-Welcome to the **Personal Loan Application** backend technical test! This project is designed to assess your ability to build a backend application using **Node.js**, **Express.js**, and **PostgreSQL** while implementing features for user authentication, loan management, and loan payments. The app should also be containerized using **Docker**.
+Because a route was asked to be admin only the user model has an additonal field called role.
+Additionally instead of having remaining_balance and total_paid  as columns they're calculated when fetching any loan. If they're needed as a literal column or property they can be calculated with additional configuration for populating them as calculated fields.
 
----
+Tsoa is used instead of traditionally declaring routes for automatic documentation, to comply with the "Include example requests and responses" requirement and to get the most of type hinting. Originally the alpha of Sequelize that integrates typescript was used ([see doc](https://sequelize.org/docs/v7/getting-started/)) but yielded unexpected behaviors, for this reason some parts may not be type hinted like the returns in the controllers; this can be fixed using interfaces with the Loan, User and Payment model structure. For this same reason in some parts the sequelize object is casted to a regular object using the ```.get({plain: true})``` method in the sequelize-typescript responses. 
+## 🛠️ Tech Stack
 
-## Context
+### Backend:
 
-You will develop a backend API that:
-1. Allows users to register and apply for personal loans.
-2. Allows authenticated users to manage their loans and make payments.
-3. Includes payments management, loan balance tracking, and loan history.
+- Node.js (v22 intel platform)
+- Express
+- TypeScript
+- Sequelize-Typescript
+- TSOA
 
-Your solution should demonstrate your expertise in:
-- Backend development using **Node.js**.
-- API design and implementation.
-- Database design and management with **PostgreSQL**.
-- Dockerization of the application for easy deployment.
-- Writing modular, clean, and testable code.
+### DevOps & Tooling:
 
----
+- Docker & Docker Compose
+- Yarn
+- Nodemon & TSX
+- Vitest
+- ESLint & Prettier
 
-## Requirements
-
-### Core Features
-
-1. **User Registration and Authentication**
-    - Users must be able to register by providing their `name`, `email`, and `password`.
-    - Authentication should be implemented using **JWT (JSON Web Tokens)**.
-    - Secured endpoints should be accessible only to authenticated users.
-
-2. **Loan Management**
-    - Users should be able to:
-        - Apply for a loan by specifying:
-            - Loan amount.
-            - Purpose of the loan.
-            - Duration of the loan (in months).
-        - View the status of their loans.
-        - Loan statuses: **Pending**, **Approved**, or **Rejected**.
-    - An endpoint should allow a loan's status to be updated to **Approved** or **Rejected** (e.g., simulating administrative approval).
-
-3. **Payments Management**
-    - Users must be able to make payments toward their loan balance.
-    - Payment details should include:
-        - Loan ID.
-        - Amount paid.
-        - Payment date.
-    - The loan's updated remaining balance should be calculated and stored after each payment.
-    - A user's loan payment history should be retrievable via an API endpoint.
-
-4. **Summary of Loan Details**
-    - Users should be able to retrieve:
-        - Loan total amount.
-        - Total paid so far.
-        - Remaining balance.
-        - Loan status.
-
----
-
-## Database Schema
-
-You should use **PostgreSQL** to design and implement the database for the application. The following schema is recommended:
-
-### 1. User Table
-| Column Name        | Type           | Description                       |
-|--------------------|----------------|-----------------------------------|
-| `id`               | Integer (PK)   | User's unique identifier.         |
-| `name`             | String         | User's full name.                 |
-| `email`            | String (Unique)| User's email address.             |
-| `password`         | String         | Hashed password.                  |
-| `created_at`       | Timestamp      | Time of user registration.        |
-
-### 2. Loan Table
-| Column Name        | Type           | Description                       |
-|--------------------|----------------|-----------------------------------|
-| `id`               | Integer (PK)   | Loan's unique identifier.         |
-| `user_id`          | Integer (FK)   | Foreign key referencing a user.   |
-| `amount`           | Float          | Total loan amount.                |
-| `purpose`          | String         | Purpose of the loan.              |
-| `duration`         | Integer        | Loan duration in months.          |
-| `status`           | String         | Loan status (`Pending`, `Approved`, `Rejected`). |
-| `total_paid`       | Float          | Sum of all payments.              |
-| `remaining_balance`| Float          | Outstanding balance of the loan.  |
-| `created_at`       | Timestamp      | Time of loan application.         |
-
-### 3. Payment Table
-| Column Name       | Type           | Description                       |
-|-------------------|----------------|-----------------------------------|
-| `id`              | Integer (PK)   | Payment's unique identifier.      |
-| `loan_id`         | Integer (FK)   | Foreign key referencing a loan.   |
-| `amount_paid`     | Float          | Payment amount.                   |
-| `payment_date`    | Date           | Date of payment.                  |
-| `created_at`      | Timestamp      | Timestamp of when this record was created. |
-
----
-
-## API Endpoints
-
-You are expected to implement the following RESTful API endpoints:
-
-### User Authentication
-| HTTP Method | Endpoint               | Description                            | Auth Required |
-|-------------|------------------------|----------------------------------------|---------------|
-| POST        | `/api/users/register`  | Register a new user.                   | No            |
-| POST        | `/api/users/login`     | Authenticate and retrieve a JWT token. | No            |
-
-### Loan Management
-| HTTP Method | Endpoint                  | Description                                        | Auth Required |
-|-------------|---------------------------|----------------------------------------------------|---------------|
-| POST        | `/api/loans`              | Submit a new loan application.                    | Yes           |
-| GET         | `/api/loans`              | Retrieve all loans for the logged-in user.         | Yes           |
-| GET         | `/api/loans/:id`          | Retrieve details of a specific loan.              | Yes           |
-| PATCH       | `/api/loans/:id/status`   | Update the status of a loan (Pending → Approved/Rejected). | Yes (Admin only) |
-
-### Payments
-| HTTP Method | Endpoint                  | Description                                        | Auth Required |
-|-------------|---------------------------|----------------------------------------------------|---------------|
-| POST        | `/api/payments`           | Make a payment for a loan.                        | Yes           |
-| GET         | `/api/loans/:id/payments` | Retrieve the payment history of a specific loan.  | Yes           |
-
----
-
-## Deliverables
-
-The following items must be part of the submission:
-
-1. **Source Code**:
-    - The backend application, organized and modular.
-    - Implementation of the required API endpoints.
-
-2. **Database Management**:
-    - Include SQL scripts or migrations for creating the database schema.
-
-3. **Docker Setup**:
-    - A `Dockerfile` to containerize the Node.js application.
-    - A `docker-compose.yml` to orchestrate the app with a PostgreSQL database.
-
-4. **Testing**:
-    - Write at least 3 unit tests covering the key features of the application (e.g., loan creation, payment processing, or JWT authentication).
-
-5. **Documentation**:
-    - Include a `README.md` (this file) with:
-        - **Setup Instructions**: Steps to build and run the application using Docker Compose.
-        - **Explanation of API Endpoints**: Include example requests and responses.
-        - **Assumptions**: Clarify any assumptions made during implementation.
-
----
-
-## Evaluation Criteria
-
-You will be evaluated based on the following:
-
-1. **API Design**:
-    - RESTful conventions, consistency, and correctness.
-    - Proper HTTP status codes and detailed error handling.
-
-2. **Code Quality**:
-    - Modular, maintainable, and well-documented code.
-    - Use of best practices such as validation, middleware, environment variables, and security practices.
-
-3. **Database Design**:
-    - Efficient schema design and relationships between entities.
-    - Correct calculations for loan balances and payments.
-
-4. **Docker and Deployment**:
-    - Functional Dockerfile and Docker Compose setup.
-    - Ease of local deployment using containers.
-
-5. **Documentation**:
-    - Clear `README.md` with well-explained setup and usage instructions.
-
-6. **Bonus Points**:
-    - Database migrations with tools like Sequelize or Knex.js.
-    - Advanced security features, such as bcrypt for password hashing or rate limiting.
-    - Pagination for listing loans or payments.
-    - Logging mechanisms for user actions.
-
----
 
 ## Getting Started
 
-Here are the steps to get started:
+### 1. Clone the Repository:
 
-Here are the steps to get started:
+```bash
+git clone https://github.com/yourusername/yourproject.git
+cd yourproject
+```
 
-1. Fork the repository.
-2. Send the email with the repository URL to me after you completed the solution.
+### 2. Setup Environment Variables:
+
+- Copy the `.env.example` file to `.env` and fill in the required values:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Run the Project in Development Mode:
+
+```bash
+docker compose up --build
+```
+
+- The application will be available at: [http://localhost:3000](http://localhost:3000)
+- API documentation is available at: [http://localhost:3000/docs](http://localhost:3000/docs)
+
+
+## ⚠️ Important: Avoid Manual Changes to Generated Files
+
+- **Do NOT edit `src/routes.ts` or `src/openapi.json` manually.**
+- These files are **automatically generated** by **TSOA** using the commands:
+
+```bash
+yarn tsoa:routes
+yarn tsoa:spec
+```
+
+- Any **manual changes** will be **overwritten** when **TSOA regenerates** these files.
+
+
+## 🎮 Playing Around
+TBD. Seeding code pending.
+
+
+## 🧪 Running Tests
+
+```bash
+yarn test
+```
+
+⚠️ Important: Have in mind that the tests are not unit tests, since they're integration tests you need a database to run them. So for simplicity you may run 
+```bash
+docker compose run app yarn test
+```
+or modify the .env to point to a testing db
+
+## 🚀 Deploying to Production
+
+### ⚠️ Important: Development and Production Setups Differ
+
+- The **development environment** uses **hot reloading** with **TSX** and **syncs models automatically**.
+- For **production**, you should:
+  - Use a **production-ready Dockerfile** that **builds the TypeScript project**.
+  - Serve the **built `dist` folder** instead of using **TSX**.
+
+### Example Production Dockerfile
+
+```Dockerfile
+FROM node:22-alpine AS build
+WORKDIR /usr/src/app
+COPY package.json yarn.lock ./
+RUN yarn install --production
+COPY . .
+RUN yarn build
+
+FROM node:22-alpine AS production
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules ./node_modules
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
+```
+
+### Running with a Production Docker Compose
+
+- Instead of using **`docker compose up`** for development, your **production `docker-compose.yml`** should:
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    command: ['node', 'dist/server.js']
+```
+
+### Use Sequelize Migrations for Production
+
+- Instead of **`sequelize.sync()`**, use **migrations**:
+
+```bash
+npx sequelize-cli db:migrate
+```
+
+- Make sure to run **migrations** as part of your **deployment pipeline**.
 
 ---
 
-Good luck, and happy coding! 🚀
+## 📄 Additional Documentation & References
+
+- **API Documentation:** [Download OpenAPI Spec](openapi.json)
+- **Project Requirements:** [View Requirements](requirements.md)
+
+---
+
+## 💡 Helpful Commands
+For simplicity running ```docker compose run app yarn XXXX``` is recommended but have in mind that all the yarn commands can be run both inside and outside docker with minor tweaks.
+
+ For example if you're pointing to host=database in the env, this uses the docker network to resolve database, but if you're running it without docker you may need to point to a propper host or localhost. Additionally if running without docker make sure to use the propper node version and install beforehand all the dependencies.
+
+| Command             | Description                            |
+| ------------------- | -------------------------------------- |
+| `yarn dev`          | Run the app in development mode        |
+| `yarn build`        | Generate routes and compile TypeScript |
+| `yarn test`         | Run all unit tests using Vitest        |
+| `yarn tsoa:routes`  | Generate TSOA routes file              |
+| `yarn tsoa:spec`    | Generate OpenAPI spec file             |
+| `docker compose up` | Start the app using Docker             |
+
+---
+
+## ❓ Troubleshooting
+
+- Make sure **Docker** is running before executing **docker compose up**.
+
+- Since we're using bycript have in mind that your node_modules and yarn may compile the binary in different architectures. So don't try to run both yarn dev and the build at the same time even though the Dockerfile explicitly deletes the node_modules to avoid issues related to that. 
+- If ports are in use, check for **existing processes** or **containers** using **port 3000**.

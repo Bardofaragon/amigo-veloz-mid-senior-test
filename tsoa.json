@@ -1,0 +1,24 @@
+{
+	"entryFile": "src/server.ts",
+	"noImplicitAdditionalProperties": "throw-on-extras",
+	"controllerPathGlobs": ["src/controllers/*.controller.ts"],
+	"spec": {
+		"outputDirectory": "src/routes",
+		"specVersion": 3,
+		"basePath": "/api",
+		"specFileBaseName": "openapi",
+		"securityDefinitions": {
+			"jwt": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header",
+				"description": "Bearer token"
+			}
+		}
+	},
+	"routes": {
+		"routesDir": "src/routes",
+		"authenticationModule": "src/middlewares/authentication.ts",
+		"basePath": "/api"
+	}
+}
